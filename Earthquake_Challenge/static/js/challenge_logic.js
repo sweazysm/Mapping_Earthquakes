@@ -37,16 +37,16 @@ let baseMaps = {
 };
 
 // 1. Add a 2nd layer group for the tectonic plate data.
-let allEarthquakes = new L.LayerGroup(); 
+let totalEarthquakes = new L.LayerGroup(); 
 
-let allTectonics = new L.LayerGroup();
+let totalTectonics = new L.LayerGroup();
 
 let majorEQ = new L.LayerGroup();
 
 // 2. Add a reference to the tectonic plates group to the overlays object.
 let overlays = {
-  "Tectonic Plates": allTectonics,
-  "Earthquakes": allEarthquakes,
+  "Tectonic Plates": totalTectonics,
+  "Earthquakes": totalEarthquakes,
   "Major Earthquakes": majorEQ
 };
 
@@ -137,21 +137,25 @@ function largetColor(magnitude) {
      onEachFeature: function(feature, layer) {
       layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place);
     }
-  }).addTo(allEarthquakes);
+  }).addTo(totalEarthquakes);
 
   // Then we add the earthquake layer to our map.
-  allEarthquakes.addTo(map);
+  totalEarthquakes.addTo(map);
 
 // 3. Retrieve the major earthquake GeoJSON data >4.5 mag for the week.
 let majEQData = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
+
 d3.json(majEQData).then(function(data) {
   console.log(data);
+  
   //Create a GeoJSON layer of major earchquake
   L.geoJSON(data, {
+    
     // Make circleMarker on the map
     pointToLayer: function(feature, latlng) {
       return L.circleMarker(latlng);
     },
+    
     // 4. Use the same style as the earthquake data.
     style: newStyleInfo,
 
@@ -162,10 +166,11 @@ onEachFeature: function(feature, layer) {
 }
    // 8. Add the major earthquakes layer to the map.
 }).addTo(majorEQ);
+
 // 9. Close the braces and parentheses for the major earthquake data.
 });
 
-  // Here we create a legend control object.
+  // legend control object.
 let legend = L.control({
   position: "bottomright"
 });
@@ -197,11 +202,10 @@ legend.onAdd = function() {
   // Finally, we our legend to the map.
   legend.addTo(map);
 
-
-  // 3. Use d3.json to make a call to get our Tectonic Plate geoJSON data.
+  // Use d3.json to make a call to get our Tectonic Plate geoJSON data.
   let tectonicData = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
-  // DELIVERABLE 1 -----
+
   let tectonicStyle = {
     color: "#ff0000",
     weight: 1
@@ -209,13 +213,15 @@ legend.onAdd = function() {
 
   d3.json(tectonicData).then(function(data) {
     console.log(data);
+    
     // Creating a GeoJSON layer with the retrieved data.
     L.geoJSON(data, {
       style: tectonicStyle
     }
-      ).addTo(allTectonics);
+      ).addTo(totalTectonics);
 
-    // Then we add the Tectonic layer to our map.
-  allTectonics.addTo(map);
+    
+      // Then we add the Tectonic layer to our map.
+  totalTectonics.addTo(map);
   }); 
 });
